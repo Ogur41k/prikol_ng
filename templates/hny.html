@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Поздравляю</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        body {
+            background-color: #1a1a1a;
+            color: #ffffff;
+            font-family: 'Courier New', Courier, monospace; /* Monospace font */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .terminal {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            color: #00ff00;
+            font-size: 1em; /* Set font size to 1em (approximately 12px) */
+            white-space: pre;
+            overflow-y: hidden; /* Disable vertical scrolling */
+            z-index: 0;
+            padding: 10px; /* Padding for text */
+        }
+
+        .container {
+            background-color: #2c2c2c;
+            border: 2px solid #00ff00;
+            border-radius: 5px;
+            padding: 20px;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+            text-align: center;
+            position: relative;
+            z-index: 1;
+            width: 400px; /* Width of the container */
+        }
+
+        h1 {
+            color: #ffcc00;
+            margin-bottom: 20px;
+        }
+
+        input[type="text"] {
+            width: 90%; /* Reduced width of input field */
+            padding: 10px;
+            border: 2px solid #00ff00;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            font-size: 16px;
+            background-color: #1a1a1a; /* Dark background */
+            color: #00ff00; /* Green text */
+            outline: none; /* Remove outline on focus */
+        }
+
+        input[type="text"]:focus {
+            border-color: #00cc00; /* Lighter green on focus */
+            box-shadow: 0 0 5px #00cc00; /* Glow effect on focus */
+        }
+
+        button {
+            background-color: #ffcc00;
+            color: #1a1a1a;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #e6b800;
+        }
+
+        @keyframes blink {
+            50% { opacity: 0; }
+        }
+
+        .cursor {
+            display: inline-block;
+            width: 10px;
+            background-color: #00ff00;
+            animation: blink 1s step-end infinite;
+        }
+
+        .terminal-user {
+            color: red; /* Устанавливаем красный цвет для текста */
+        }
+    </style>
+</head>
+<body>
+    <div class="terminal" id="terminal"></div>
+    <div class="container">
+      <img src="/1.jpg">
+        Я бы мог написать много теплых слов, но фотография сверху все объясняет и без них. С новым годом!
+    </div>
+    <script>
+    function playHint() {
+        const audio = document.getElementById('hintAudio');
+        audio.play();
+    }
+    </script>
+    <script>
+        function submitAnswer() {
+            const answer = document.getElementById('answer').value;
+            alert('Your answer: ' + answer);
+        }
+
+        const terminal = document.getElementById('terminal');
+        let commands = [];
+
+        // Load commands from external JSON file
+        fetch('/commands.json')
+            .then(response => response.json())
+            .then(data => {
+                commands = data;
+                typeCommand(); // Start typing commands after loading
+            })
+            .catch(error => console.error('Error loading commands:', error));
+
+        let index = 0;
+
+        function typeCommand() {
+            if (index < commands.length) {
+                const command = commands[index];
+                terminal.innerHTML += `<span class="terminal-user">root@kali</span>:~$ ${command.input}\n`;
+                terminal.innerHTML += `${command.output}\n \n\n`; // Instant output
+                terminal.scrollTop = terminal.scrollHeight // Scroll down
+                index++;
+                setTimeout(typeCommand, 500); // Delay before typing the next command
+            } else {
+                index = 0; // Reset index to loop the commands
+                terminal.innerHTML += "<span class='cursor'></span>";
+                setTimeout(typeCommand, 1000); // Restart the command typing after a delay
+            }
+        }
+    </script>
+</body>
+</html>
